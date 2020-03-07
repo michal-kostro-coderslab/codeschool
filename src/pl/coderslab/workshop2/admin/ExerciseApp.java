@@ -1,12 +1,12 @@
 package pl.coderslab.workshop2.admin;
 
-import pl.coderslab.workshop2.dao.GroupDao;
-import pl.coderslab.workshop2.model.Group;
+import pl.coderslab.workshop2.dao.ExerciseDao;
+import pl.coderslab.workshop2.model.Exercise;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-public class GroupApp {
+public class ExerciseApp {
     private static Scanner scan = new Scanner(System.in);
 
     public static void main(String[] args) {
@@ -29,10 +29,10 @@ public class GroupApp {
 
     private static String printInvitation() {
         String action = null;
-        System.out.println("Lista grup:");
-        Group[] groups = GroupDao.findAll();
-        for (Group group : groups)
-            System.out.println("["+group.getId()+"] " + group.getName());
+        System.out.println("Lista zadań:");
+        Exercise[] exercises = ExerciseDao.findAll();
+        for (Exercise exercise : exercises)
+            System.out.println("["+exercise.getId()+"] " + exercise.getTitle());
 
         do {
             System.out.println("Wybierz jedną z opcji: [a]dd, [e]dit, [d]elete, [q]uit :");
@@ -58,28 +58,31 @@ public class GroupApp {
     }
 
     private static void printAdd() {
-        System.out.println("Podaj dane grupy");
-        System.out.println("Podaj nazwę:");
-        String name = scan.nextLine();
-        Group group = new Group();
-        group.setName(name);
-        GroupDao.create(group);
-        System.out.println("Dodano grupę!");
+        System.out.println("Podaj dane zadania");
+        System.out.println("Podaj tytuł:");
+        String title = scan.nextLine();
+        System.out.println("Podaj opis:");
+        String description = scan.nextLine();
+        ExerciseDao.create(new Exercise(title, description));
+        System.out.println("Dodano zadanie!");
     }
 
     private static void printEdit() {
         Integer id = null;
         do {
-            System.out.println("Którą grupę chesz edytować?");
+            System.out.println("Które zadanie chesz edytować?");
             try {
                 id = scan.nextInt();
                 scan.nextLine();
-                System.out.println("Podaj nazwę:");
-                String name = scan.nextLine();
-                Group g = GroupDao.read(id);
-                g.setName(name);
-                GroupDao.update(g);
-                System.out.println("Zaktualizowano dane grupy!");
+                System.out.println("Podaj tytuł:");
+                String title = scan.nextLine();
+                System.out.println("Podaj opis:");
+                String description = scan.nextLine();
+                Exercise e = ExerciseDao.read(id);
+                e.setTitle(title);
+                e.setDescription(description);
+                ExerciseDao.update(e);
+                System.out.println("Zaktualizowano dane zadania!");
             } catch (InputMismatchException e) {
                 System.out.println("Błędny numer");
                 scan.nextLine();
@@ -90,12 +93,12 @@ public class GroupApp {
     private static void printDelete() {
         Integer id = null;
         do {
-            System.out.println("Którę grupę chcesz usunąć?");
+            System.out.println("Które zadanie chcesz usunąć?");
             try {
                 id = scan.nextInt();
                 scan.nextLine();
-                GroupDao.delete(id);
-                System.out.println("Usunięto grupę!");
+                ExerciseDao.delete(id);
+                System.out.println("Usunięto zadanie");
             } catch (InputMismatchException e) {
                 System.out.println("Błędny numer");
                 scan.nextLine();

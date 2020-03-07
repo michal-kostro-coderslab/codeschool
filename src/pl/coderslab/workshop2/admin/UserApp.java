@@ -1,12 +1,14 @@
 package pl.coderslab.workshop2.admin;
 
 import pl.coderslab.workshop2.dao.GroupDao;
+import pl.coderslab.workshop2.dao.UserDao;
 import pl.coderslab.workshop2.model.Group;
+import pl.coderslab.workshop2.model.User;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-public class GroupApp {
+public class UserApp {
     private static Scanner scan = new Scanner(System.in);
 
     public static void main(String[] args) {
@@ -29,10 +31,10 @@ public class GroupApp {
 
     private static String printInvitation() {
         String action = null;
-        System.out.println("Lista grup:");
-        Group[] groups = GroupDao.findAll();
-        for (Group group : groups)
-            System.out.println("["+group.getId()+"] " + group.getName());
+        System.out.println("Lista użytkowników:");
+        User[] users = UserDao.findAll();
+        for (User user : users)
+            System.out.println("["+user.getId()+"] " + user.getUserName() + " [" + user.getEmail() + "]");
 
         do {
             System.out.println("Wybierz jedną z opcji: [a]dd, [e]dit, [d]elete, [q]uit :");
@@ -58,28 +60,50 @@ public class GroupApp {
     }
 
     private static void printAdd() {
-        System.out.println("Podaj dane grupy");
+        System.out.println("Podaj dane użytkownika");
         System.out.println("Podaj nazwę:");
         String name = scan.nextLine();
-        Group group = new Group();
-        group.setName(name);
-        GroupDao.create(group);
-        System.out.println("Dodano grupę!");
+        System.out.println("Podaj e-mail:");
+        String email = scan.nextLine();
+        System.out.println("Podaj hasło:");
+        String password = scan.nextLine();
+        Integer id = null;
+        do {
+            System.out.println("Do której grupy ma należeć:");
+            for (Group g : GroupDao.findAll())
+                System.out.println("["+g.getId()+"] "+g.getName());
+            try {
+                id = scan.nextInt();
+                scan.nextLine();
+            } catch (InputMismatchException e) {
+                System.out.println("Błędny numer");
+                scan.nextLine();
+            }
+        } while (id == null);
+        Group group = GroupDao.read(id);
+        UserDao.create(new User(name, email, password, group));
+        System.out.println("Dodano użytkownika!");
     }
 
     private static void printEdit() {
         Integer id = null;
         do {
-            System.out.println("Którą grupę chesz edytować?");
+            System.out.println("Którego użytkownika chcesz edytować?");
             try {
                 id = scan.nextInt();
                 scan.nextLine();
                 System.out.println("Podaj nazwę:");
                 String name = scan.nextLine();
-                Group g = GroupDao.read(id);
-                g.setName(name);
-                GroupDao.update(g);
-                System.out.println("Zaktualizowano dane grupy!");
+                System.out.println("Podaj e-mail:");
+                String email = scan.nextLine();
+                System.out.println("Podaj hasło:");
+                String password = scan.nextLine();
+                User u = UserDao.read(id);
+                u.setUserName(name);
+                u.setEmail(email);
+                u.setPassword(password);
+                UserDao.update(u);
+                System.out.println("Zaktualizowano dane użytkownika!");
             } catch (InputMismatchException e) {
                 System.out.println("Błędny numer");
                 scan.nextLine();
@@ -90,12 +114,12 @@ public class GroupApp {
     private static void printDelete() {
         Integer id = null;
         do {
-            System.out.println("Którę grupę chcesz usunąć?");
+            System.out.println("Którego użytkownika chcesz usunąć?");
             try {
                 id = scan.nextInt();
                 scan.nextLine();
-                GroupDao.delete(id);
-                System.out.println("Usunięto grupę!");
+                UserDao.delete(id);
+                System.out.println("Usunięto użytkownika!");
             } catch (InputMismatchException e) {
                 System.out.println("Błędny numer");
                 scan.nextLine();
